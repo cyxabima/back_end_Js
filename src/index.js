@@ -1,13 +1,23 @@
-import mongoose from "mongoose";
-import { DB_NAME } from "./constant.js";
 import dotenv from "dotenv";
-import express from "express";
+import { DB_NAME } from "./constant.js";
 import connectionDB from "./db/index.js";
-
-
+import { app } from "./app.js";
 dotenv.config()
-const app = express();
-connectionDB()
+const port = process.env.PORT|| 8000;
+
+connectionDB().then(
+()=>{
+    app.on('error',(error)=>{
+        console.log("Error: ",error)
+    });
+
+    app.listen(port, ()=>{
+        console.log("App listing on ",port)
+    });
+}
+).catch((error)=>{
+    console.error(`An Error Occur ${error}`)
+})
 
 
 
