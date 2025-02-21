@@ -3,19 +3,21 @@ import { DB_NAME } from "./constant.js";
 import connectionDB from "./db/index.js";
 import { app } from "./app.js";
 dotenv.config()
-const port = process.env.PORT|| 8000;
+import { asyncHandler } from "./utils/asyncHandler.js";
+const port = process.env.PORT || 8000;
+
 
 connectionDB().then(
-()=>{
-    app.on('error',(error)=>{
-        console.log("Error: ",error)
-    });
+    () => {
+        app.on('error', (error) => {
+            console.log("Error: ", error)
+        });
 
-    app.listen(port, ()=>{
-        console.log("App listing on ",port)
-    });
-}
-).catch((error)=>{
+        app.listen(port, () => {
+            console.log("App listing on ", port)
+        });
+    }
+).catch((error) => {
     console.error(`An Error Occur ${error}`)
 })
 
