@@ -25,3 +25,5 @@ const uploadOnCloudinary = async (localFilePath) => {
         fs.unlinkSync(localFilePath) // remove the temporary uploaded file corrupted file
     }
 }
+
+export {uploadOnCloudinary}
