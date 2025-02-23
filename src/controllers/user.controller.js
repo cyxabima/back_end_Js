@@ -21,28 +21,33 @@ const registerUser = asyncHandler(
         const { username, email, fullname, password } = req.body;
 
         if ([username, email, fullname, password].some((data) => (data.trim() == ""))) {
-            throw ApiError(400, "All field are required")
+            throw new ApiError(400, "All field are required")
         }
 
-        if (await User.findOne(email)) {
-            throw ApiError(400, "Account Already Exits")
+        if (await User.findOne({email})) {
+            throw new ApiError(400, "Account Already Exits")
         }
 
-        if (await User.findOne(username)) {
-            throw ApiError(400, "User Name is taken")
+        if (await User.findOne({username})) {
+            throw new ApiError(400, "User Name is taken")
         }
 
-        const avatarLocalPath = res.files?.avatar[0]?.path;
+        const avatarLocalPath = req.files?.avatar[0]?.path;
+        // console.log(req.files)
+        let coverImageLocalPath
+        if(req.files.length > 1){
+            coverImageLocalPath = req.files?.cover[0]?.path;
+        }
 
-        const coverImageLocalPath = res.files?.cover[0]?.path;
         if (!avatarLocalPath) {
             throw new ApiError("400", "Avatar File is required")
         }
         const avatar = await uploadOnCloudinary(avatarLocalPath);
         const cover = await uploadOnCloudinary(coverImageLocalPath);
+        // console.log(avatar)
 
         if (!avatar) {
-            throw new ApiError("400", "Avatar File is required")
+            throw new ApiError("400", "Avatar File is yes required")
         }
 
         const user = await User.create({
@@ -58,14 +63,15 @@ const registerUser = asyncHandler(
             throw new ApiError(500, "Something went wrong while registering the User")
         }
 
-        const createdUser = User.findById(user._id).select(
+        const createdUser = await User.findById(user._id).select(
             "-password -refreshToken"
         )
+        console.log(createdUser)
 
-        req.status(201).json(
+        res.status(200).json(
+            // new ApiResponse(201, createdUser)
             new ApiResponse(201, createdUser)
         )
-    }
-)
+})
 
 export { registerUser }
